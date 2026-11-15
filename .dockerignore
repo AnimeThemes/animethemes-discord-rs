@@ -1,0 +1,11 @@
+target
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+.git
+.gitignore
+.github
+.env
+.env.*
+README.md
+.rustfmt.toml

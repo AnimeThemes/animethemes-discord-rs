@@ -1,0 +1,11 @@
+services:
+    discord-rs:
+        image: '${APP_IMAGE:-animethemes-discord-rs:local}'
+        container_name: animethemes-discord-rs
+        working_dir: /app
+        restart: on-failure:10
+        env_file: .env
+        ports:
+            - "127.0.0.1:${API_PORT:-3000}:${API_PORT:-3000}"
+        extra_hosts:
+            - "animethemes-rust.test:host-gateway"

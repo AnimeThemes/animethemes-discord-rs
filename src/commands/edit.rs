@@ -91,6 +91,8 @@ pub async fn edit_message(ctx: Context<'_>, mut message: serenity::Message) -> R
         )
         .await?;
 
+    tracing::info!("Edited message by {}: {}", ctx.author().name, message.id);
+
     ctx.say("Done! Message updated.").await?;
 
     Ok(())

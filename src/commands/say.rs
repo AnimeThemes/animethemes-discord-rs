@@ -64,7 +64,7 @@ pub async fn say(
         .content(input.message)
         .add_files(files);
 
-    channel.id.send_message(ctx.http(), message).await?;
+    let message = channel.id.send_message(ctx.http(), message).await?;
 
     ctx.send(
         poise::CreateReply::default()
@@ -72,6 +72,8 @@ pub async fn say(
             .ephemeral(true),
     )
     .await?;
+
+    tracing::info!("Sent message by {}: {}", ctx.author().name, message.id);
 
     Ok(())
 }

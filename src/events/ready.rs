@@ -10,7 +10,7 @@ use crate::utils::slugs::{
 };
 
 pub async fn ready(ctx: &serenity::Context) -> Result<(), Error> {
-    println!("Bot Online");
+    tracing::info!("Bot Online");
 
     loop {
         let response = graphql_query::<CurrentFeaturedThemeQuery, _>(()).await?;

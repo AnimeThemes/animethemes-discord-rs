@@ -16,7 +16,7 @@ pub async fn event_handler(
 
             tokio::spawn(async move {
                 if let Err(error) = ready::ready(&ctx).await {
-                    println!("[ready] Error: {}", error);
+                    tracing::error!("[ready] Error: {}", error);
                 }
             });
         }

@@ -32,6 +32,8 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
+    tracing_subscriber::fmt::init();
+
     dotenv().ok();
 
     let token = std::env::var("DISCORD_TOKEN").expect("DISCORD_TOKEN is required in .env");

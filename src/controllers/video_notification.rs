@@ -36,6 +36,8 @@ pub async fn video_notification(
     State(state): State<Arc<AppState>>,
     Json(body): Json<VideoNotificationBody>,
 ) -> Response {
+    tracing::debug!("Received video notification: {:?}", body);
+
     let ctx = match state.discord.read().await.clone() {
         Some(ctx) => ctx,
         None => return StatusCode::SERVICE_UNAVAILABLE.into_response(),
@@ -47,12 +49,11 @@ pub async fn video_notification(
     let channel = serenity::ChannelId::new(channel_id.parse::<u64>().unwrap());
 
     for video in &body.videos {
-        let Ok(Some(result)) = graphql_query::<VideoNotification, _>(
-            VideoNotificationVariables {
-                id: video.video_id,
-            },
-        )
-        .await else {
+        let Ok(Some(result)) = graphql_query::<VideoNotification, _>(VideoNotificationVariables {
+            id: video.video_id,
+        })
+        .await
+        else {
             continue;
         };
 
@@ -63,9 +64,11 @@ pub async fn video_notification(
             let message = serenity::CreateMessage::new().embed(embed);
 
             if let Err(error) = channel.send_message(&ctx.http, message).await {
-                eprintln!("Failed to send video notification: {}", error);
+                tracing::error!("Failed to send video notification: {}", error);
                 return StatusCode::INTERNAL_SERVER_ERROR.into_response();
             }
+
+            tracing::info!("Sent video notification for video {}", video.basename);
         }
     }
 
@@ -87,6 +90,7 @@ pub struct VideoNotification {
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(graphql_type = "Video")]
 pub struct VideoNotificationData {
+    pub basename: String,
     #[cynic(spread)]
     pub embed: VideoEmbed,
 }

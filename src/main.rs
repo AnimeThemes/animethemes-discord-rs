@@ -88,7 +88,10 @@ async fn main() -> Result<(), Error> {
 
     let listener = tokio::net::TcpListener::bind(bind).await.unwrap();
 
-    tracing::info!("HTTP server listening on {}", listener.local_addr().unwrap());
+    tracing::info!(
+        "HTTP server listening on {}",
+        listener.local_addr().unwrap()
+    );
 
     tokio::select! {
         result = client.start() => {

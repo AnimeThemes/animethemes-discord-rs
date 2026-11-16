@@ -40,17 +40,16 @@ pub fn create_video_notification_embed(
         })
         .unwrap_or_default();
 
-    let performers = if !song_staff.is_empty() {
-        format!(
-            " by {}",
-            artists_description(
-                song_staff
-                    .iter()
-                    .map(|staff| &staff.artist_description)
-                    .collect(),
-                "Performance".to_string()
-            )
-        )
+    let performers = artists_description(
+        song_staff
+            .iter()
+            .map(|staff| &staff.artist_description)
+            .collect(),
+        "Performance".to_string(),
+    );
+
+    let performers = if !performers.is_empty() {
+        format!(" by {}", performers)
     } else {
         "".to_string()
     };
@@ -107,7 +106,7 @@ pub fn create_video_notification_embed(
     });
 
     description.push(match video.resolution {
-        Some(resolution) => format!("**Resolution:** {}", resolution),
+        Some(resolution) => format!("**Resolution:** {}p", resolution),
         None => "".to_string(),
     });
 
@@ -135,15 +134,17 @@ pub fn create_video_notification_embed(
                 .collect::<Vec<_>>()
                 .join("\n"),
         )
-        .url(&anime.site_url)
-        .thumbnail(
-            anime
-                .images
-                .nodes
-                .first()
-                .map(|image| image.link.as_str())
-                .unwrap_or(""),
-        );
+        .url(&anime.site_url);
+
+    if let Some(image) = anime
+        .images
+        .nodes
+        .iter()
+        .find(|i| i.facet == ImageFacet::SmallCover)
+        .map(|image| image.link.as_str())
+    {
+        embed = embed.thumbnail(image);
+    }
 
     if !video.tags.is_empty() {
         embed = embed.footer(serenity::CreateEmbedFooter::new(video.tags));
@@ -222,6 +223,7 @@ pub struct ImageableConnection {
 
 #[derive(cynic::QueryFragment, Debug)]
 pub struct Image {
+    pub facet: ImageFacet,
     pub link: String,
 }
 
@@ -235,4 +237,14 @@ pub enum VideoOverlap {
     None,
     Trans,
     Over,
+}
+
+#[derive(cynic::Enum, PartialEq, Clone, Copy, Debug)]
+pub enum ImageFacet {
+    SmallCover,
+    LargeCover,
+    Grill,
+    Document,
+    Avatar,
+    Banner,
 }

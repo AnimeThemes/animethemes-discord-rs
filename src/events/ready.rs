@@ -15,7 +15,7 @@ pub async fn ready(ctx: &serenity::Context) -> Result<(), Error> {
     loop {
         let response = graphql_query::<CurrentFeaturedThemeQuery, _>(()).await?;
 
-        if let Some(featured_theme) = response.data.unwrap_or_default().current_featured_theme {
+        if let Some(featured_theme) = response.unwrap_or_default().current_featured_theme {
             let entry = &featured_theme.entry;
             let theme = &entry.theme;
 

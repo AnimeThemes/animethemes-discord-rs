@@ -1,6 +1,6 @@
 use std::sync::LazyLock;
 
-use anyhow::{Result, bail};
+use anyhow::bail;
 use cynic::serde::Serialize;
 use cynic::serde::de::DeserializeOwned;
 use cynic::{GraphQlResponse, QueryBuilder, QueryVariables};
@@ -9,9 +9,7 @@ use reqwest::header::{CONTENT_TYPE, HeaderMap, HeaderValue, USER_AGENT};
 #[cynic::schema("animethemes")]
 pub(crate) mod schema {}
 
-pub mod video_notification;
-
-pub async fn graphql_query<Q, V>(variables: V) -> Result<GraphQlResponse<Q>>
+pub async fn graphql_query<Q, V>(variables: V) -> Result<Option<Q>, crate::Error>
 where
     Q: QueryBuilder<V> + DeserializeOwned,
     V: QueryVariables + Serialize,
@@ -46,5 +44,5 @@ where
         bail!("GraphQL errors: {errors:?}");
     }
 
-    Ok(response)
+    Ok(response.data)
 }

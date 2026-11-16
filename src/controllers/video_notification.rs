@@ -28,6 +28,7 @@ impl VideoNotificationBody {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Video {
     video_id: i32,
 }

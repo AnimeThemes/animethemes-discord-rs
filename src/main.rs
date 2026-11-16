@@ -68,8 +68,6 @@ async fn main() -> Result<(), Error> {
         .framework(framework)
         .await?;
 
-    client.start().await.unwrap();
-
     let api_key = ApiKey(std::env::var("API_KEY").expect("API_KEY is required in .env"));
 
     let app = Router::new()
@@ -86,13 +84,19 @@ async fn main() -> Result<(), Error> {
         std::env::var("API_PORT").unwrap_or("3000".to_string())
     );
 
+    tracing::debug!("HTTP attempting to bind {}", bind);
+
     let listener = tokio::net::TcpListener::bind(bind).await.unwrap();
+
+    tracing::info!("HTTP server listening on {}", listener.local_addr().unwrap());
 
     tokio::select! {
         result = client.start() => {
+            tracing::error!("Discord client stopped: {:?}", result);
             result?;
         }
         result = axum::serve(listener, app) => {
+            tracing::error!("HTTP server stopped: {:?}", result);
             result?;
         }
     }

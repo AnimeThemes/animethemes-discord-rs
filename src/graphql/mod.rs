@@ -9,6 +9,8 @@ use reqwest::header::{CONTENT_TYPE, HeaderMap, HeaderValue, USER_AGENT};
 #[cynic::schema("animethemes")]
 pub(crate) mod schema {}
 
+pub mod enums;
+
 pub async fn graphql_query<Q, V>(variables: V) -> Result<Option<Q>, crate::Error>
 where
     Q: QueryBuilder<V> + DeserializeOwned,

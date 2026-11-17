@@ -46,6 +46,7 @@ async fn main() -> Result<(), Error> {
         .options(poise::FrameworkOptions {
             commands: vec![
                 // Slash Commands
+                commands::anime::anime(),
                 commands::say::say(),
                 commands::video::video(),
                 // Menu Commands

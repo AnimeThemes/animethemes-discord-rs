@@ -44,6 +44,7 @@ dependencies = [
  "graphql_client",
  "indexmap",
  "poise",
+ "regex",
  "reqwest 0.13.5",
  "serde",
  "serde_json",

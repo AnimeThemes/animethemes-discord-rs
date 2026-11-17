@@ -3,6 +3,7 @@ use poise::serenity_prelude as serenity;
 
 use crate::descriptions::artist::artists_description;
 use crate::descriptions::{self};
+use crate::graphql::enums::{ImageFacet, VideoOverlap};
 use crate::graphql::schema;
 use crate::utils::slugs;
 
@@ -230,21 +231,4 @@ pub struct Image {
 #[derive(cynic::QueryFragment, Debug)]
 pub struct AnimeTitle {
     pub romaji: String,
-}
-
-#[derive(cynic::Enum, Clone, Copy, Debug)]
-pub enum VideoOverlap {
-    None,
-    Trans,
-    Over,
-}
-
-#[derive(cynic::Enum, PartialEq, Clone, Copy, Debug)]
-pub enum ImageFacet {
-    SmallCover,
-    LargeCover,
-    Grill,
-    Document,
-    Avatar,
-    Banner,
 }

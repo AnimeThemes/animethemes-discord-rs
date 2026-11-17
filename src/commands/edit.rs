@@ -18,7 +18,6 @@ struct EditMessageModal {
 }
 
 #[poise::command(
-    slash_command,
     guild_only,
     ephemeral,
     context_menu_command = "Edit Message",

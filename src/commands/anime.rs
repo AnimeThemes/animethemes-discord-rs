@@ -3,22 +3,28 @@ use std::time::Duration;
 
 use poise::serenity_prelude::futures::StreamExt;
 use poise::serenity_prelude::{
-    self as serenity, Colour, ComponentInteractionCollector, CreateInteractionResponse,
-    CreateInteractionResponseMessage, ReactionType,
+    self as serenity, ComponentInteractionCollector, CreateInteractionResponse,
+    CreateInteractionResponseMessage,
 };
 
 use crate::graphql::enums::ImageFacet;
 use crate::graphql::{graphql_query, schema};
 use crate::{Context, Error};
 
+/// Searches for an anime by its title or alternative titles.
 #[poise::command(slash_command, guild_only)]
-pub async fn anime(ctx: Context<'_>, title: String) -> Result<(), Error> {
+pub async fn anime(
+    ctx: Context<'_>,
+    #[description = "The anime title to search for"] title: String,
+) -> Result<(), Error> {
+    tracing::info!("[Request from {}] [anime]: {title}", ctx.author().id);
+
     ctx.defer().await?;
 
     let Some(data) =
         graphql_query::<SearchQuery, _>(SearchQueryVariables { search: title }).await?
     else {
-        ctx.say("Some Error.").await?;
+        ctx.say("Some error occurred.").await?;
         return Ok(());
     };
 
@@ -55,7 +61,8 @@ pub async fn anime(ctx: Context<'_>, title: String) -> Result<(), Error> {
                 .create_response(
                     ctx.serenity_context(),
                     CreateInteractionResponse::Message(
-                        CreateInteractionResponseMessage::new().content("You cannot use it."),
+                        CreateInteractionResponseMessage::new()
+                            .content("You are not the one who initiated this command."),
                     ),
                 )
                 .await?;
@@ -108,7 +115,7 @@ fn create_embed(anime: &Anime, index: usize, count: usize) -> serenity::CreateEm
     let mut embed = serenity::CreateEmbed::new()
         .title(anime.title.romaji.clone())
         .url(anime.site_url.clone())
-        .color(Colour::BLUE);
+        .color(serenity::model::Colour::BLUE);
 
     static MULTIPLE_NEWLINES: LazyLock<regex::Regex> =
         LazyLock::new(|| regex::Regex::new(r"\n{3,}").unwrap());
@@ -146,19 +153,19 @@ fn create_embed(anime: &Anime, index: usize, count: usize) -> serenity::CreateEm
 fn navigation_buttons(disabled: bool) -> Vec<serenity::CreateActionRow> {
     vec![serenity::CreateActionRow::Buttons(vec![
         serenity::CreateButton::new("veryPrevious")
-            .emoji(ReactionType::Unicode("⏪".into()))
+            .emoji(serenity::ReactionType::Unicode("⏪".into()))
             .style(serenity::ButtonStyle::Primary)
             .disabled(disabled),
         serenity::CreateButton::new("previous")
-            .emoji(ReactionType::Unicode("◀️".into()))
+            .emoji(serenity::ReactionType::Unicode("◀️".into()))
             .style(serenity::ButtonStyle::Primary)
             .disabled(disabled),
         serenity::CreateButton::new("next")
-            .emoji(ReactionType::Unicode("▶️".into()))
+            .emoji(serenity::ReactionType::Unicode("▶️".into()))
             .style(serenity::ButtonStyle::Primary)
             .disabled(disabled),
         serenity::CreateButton::new("veryNext")
-            .emoji(ReactionType::Unicode("⏩".into()))
+            .emoji(serenity::ReactionType::Unicode("⏩".into()))
             .style(serenity::ButtonStyle::Primary)
             .disabled(disabled),
     ])]

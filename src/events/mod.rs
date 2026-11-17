@@ -4,6 +4,7 @@ use crate::{Data, Error};
 
 pub mod ready;
 
+/// Handles incoming events from the Discord API.
 pub async fn event_handler(
     framework: poise::FrameworkContext<'_, Data, Error>,
     event: &serenity::FullEvent,

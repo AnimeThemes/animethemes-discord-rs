@@ -18,6 +18,7 @@ struct SayModal {
     image_links: Option<String>,
 }
 
+/// Sends a message to the specified channel.
 #[poise::command(
     slash_command,
     guild_only,
@@ -27,13 +28,19 @@ struct SayModal {
 )]
 pub async fn say(
     ctx: Context<'_>,
-    #[description = "Set a channel"]
+    #[description = "Choose a channel"]
     #[channel_types("Text")]
     channel: serenity::GuildChannel,
 ) -> Result<(), Error> {
     let Some(input) = SayModal::execute(ctx).await? else {
         return Ok(());
     };
+
+    tracing::info!(
+        "[Request from {}] [say]: {}",
+        ctx.author().id,
+        input.message
+    );
 
     let mut files = Vec::new();
 
@@ -73,7 +80,11 @@ pub async fn say(
     )
     .await?;
 
-    tracing::info!("Sent message by {}: {}", ctx.author().name, message.id);
+    tracing::info!(
+        "[Request from {}] [say] Sent message: {}",
+        ctx.author().id,
+        message.id
+    );
 
     Ok(())
 }

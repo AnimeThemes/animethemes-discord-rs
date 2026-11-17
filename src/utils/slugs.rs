@@ -23,6 +23,7 @@ pub fn create_theme_slug(theme: &CreateVideoSlugTheme, entry: &CreateVideoSlugEn
     slug
 }
 
+/// Creates a slug matching the video URL on the website.
 pub fn create_video_slug(
     theme: &CreateVideoSlugTheme,
     entry: &CreateVideoSlugEntry,

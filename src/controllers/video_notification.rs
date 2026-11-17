@@ -37,7 +37,7 @@ pub async fn video_notification(
     State(state): State<Arc<AppState>>,
     Json(body): Json<VideoNotificationBody>,
 ) -> Response {
-    tracing::debug!("Received video notification: {:?}", body);
+    tracing::info!("Received video notification: {:?}", body);
 
     let ctx = match state.discord.read().await.clone() {
         Some(ctx) => ctx,

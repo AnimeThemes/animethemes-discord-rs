@@ -29,7 +29,9 @@ pub async fn ready(ctx: &serenity::Context) -> Result<(), Error> {
                 )
             );
 
-            ctx.set_activity(Some(serenity::ActivityData::listening(name)));
+            ctx.set_activity(Some(serenity::ActivityData::listening(name.clone())));
+
+            tracing::info!("[ready] Set featured theme to {name}");
         }
 
         sleep(Duration::from_mins(30)).await;

@@ -6,6 +6,7 @@ use axum::response::{IntoResponse, Response};
 #[derive(Clone)]
 pub struct ApiKey(pub String);
 
+/// Validates the API key for internal requests.
 pub async fn validate(State(api_key): State<ApiKey>, request: Request, next: Next) -> Response {
     let valid = request
         .headers()

@@ -4,13 +4,19 @@ use crate::embeds::{self};
 use crate::graphql::graphql_query;
 use crate::{Context, Error};
 
+/// Sends a video notification to the uploads channel.
 #[poise::command(
     slash_command,
     prefix_command,
     default_member_permissions = "ADMINISTRATOR",
     required_permissions = "ADMINISTRATOR"
 )]
-pub async fn video(ctx: Context<'_>, #[description = "Choose id"] id: i32) -> Result<(), Error> {
+pub async fn video(
+    ctx: Context<'_>,
+    #[description = "Choose video id"] id: i32,
+) -> Result<(), Error> {
+    tracing::info!("[Request from {}] [video]: {id}", ctx.author().id);
+
     ctx.defer().await?;
 
     let response = graphql_query::<VideoNotification, _>(VideoNotificationVariables { id }).await?;

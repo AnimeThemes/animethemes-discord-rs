@@ -17,6 +17,7 @@ struct EditMessageModal {
     image_links: Option<String>,
 }
 
+/// Edits a message sent by the bot.
 #[poise::command(
     guild_only,
     ephemeral,
@@ -29,6 +30,13 @@ pub async fn edit_message(ctx: Context<'_>, mut message: serenity::Message) -> R
         ctx.say("This message is not from the bot.").await?;
         return Ok(());
     }
+
+    tracing::info!(
+        "[Request from {}] [edit {}] old: {}",
+        ctx.author().id,
+        message.id,
+        message.content
+    );
 
     let links = message
         .attachments
@@ -90,7 +98,12 @@ pub async fn edit_message(ctx: Context<'_>, mut message: serenity::Message) -> R
         )
         .await?;
 
-    tracing::info!("Edited message by {}: {}", ctx.author().name, message.id);
+    tracing::info!(
+        "[Request from {}] [edit {}] new: {}",
+        ctx.author().id,
+        message.id,
+        message.content
+    );
 
     ctx.say("Done! Message updated.").await?;
 
